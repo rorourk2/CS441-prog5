@@ -76,7 +76,20 @@ public class MainActivity extends AppCompatActivity {
         Clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                total=0;
+                i.clear();
+                num=0;
+                t10.setText("");
+                t9.setText("");
+                t8.setText("");
+                t7.setText("");
+                t6.setText("");
+                t5.setText("");
+                t4.setText("");
+                t3.setText("");
+                t2.setText("");
+                t1.setText("");
+                totaltext.setText("0");
             }
         });
     }
