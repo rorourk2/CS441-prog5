@@ -1,5 +1,7 @@
 package com.example.numbers;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,6 +17,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity implements RecyclerAdapter.ItemClickListener{
     int total;
@@ -31,7 +35,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerAdapter.I
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         in=findViewById(R.id.b);
-        entries=new ArrayList<String>();
+        entries=getArray();
+        total=0;
+        for(int x=0; x<entries.size(); x++){
+            total+=Integer.parseInt(entries.get(x));
+        }
+
         Button Add = findViewById(R.id.button);
         Button Clear = findViewById(R.id.button2);
         t=this;
@@ -42,17 +51,19 @@ public class MainActivity extends AppCompatActivity implements RecyclerAdapter.I
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.refreshDrawableState();
         totaltext=findViewById(R.id.textView11);
+        totaltext.setText(String.valueOf(total));
         Add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(!in.getText().toString().equals("")) {
                     total += Integer.parseInt(in.getText().toString());
                     entries.add(in.getText().toString());
-                    adapter = new RecyclerAdapter(t, entries);
+                    /*adapter = new RecyclerAdapter(t, entries);
                     adapter.setClickListener(t);
                     recyclerView.setAdapter(adapter);
                     recyclerView.setLayoutManager(new LinearLayoutManager(t));
-                    recyclerView.refreshDrawableState();
+                    recyclerView.refreshDrawableState();*/
+                    adapter.notifyDataSetChanged();
                     in.setText("");
                     totaltext.setText(Integer.toString(total));
                 }
@@ -65,11 +76,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerAdapter.I
             public void onClick(View view) {
                 total=0;
                 entries.clear();
-                adapter = new RecyclerAdapter(t, entries);
-                adapter.setClickListener(t);
-                recyclerView.setAdapter(adapter);
-                recyclerView.setLayoutManager(new LinearLayoutManager(t));
-                recyclerView.refreshDrawableState();
+                adapter.notifyDataSetChanged();
                 totaltext.setText("0");
             }
         });
@@ -83,11 +90,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerAdapter.I
         total -= Integer.parseInt(entries.get(position));
         //topline.setText("Clicked " + entries.get(position));
         entries.remove(position);
-        adapter = new RecyclerAdapter(t, entries);
-        adapter.setClickListener(t);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(t));
-        recyclerView.refreshDrawableState();
+        adapter.notifyDataSetChanged();
         totaltext.setText(Integer.toString(total));
     }
 
@@ -111,5 +114,31 @@ public class MainActivity extends AppCompatActivity implements RecyclerAdapter.I
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public boolean saveArray() {
+        SharedPreferences sp = this.getSharedPreferences("The", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor mEdit1 = sp.edit();
+        Set<String> set = new HashSet<String>();
+        set.addAll(entries);
+        mEdit1.putStringSet("list", set);
+        return mEdit1.commit();
+    }
+
+    public ArrayList<String> getArray() {
+        SharedPreferences sp = this.getSharedPreferences("The", Activity.MODE_PRIVATE);
+
+        //NOTE: if shared preference is null, the method return empty Hashset and not null
+        Set<String> set = sp.getStringSet("list", new HashSet<String>());
+
+
+
+        return new ArrayList<String>(set);
+    }
+
+
+    public void onStop() {
+        saveArray();
+        super.onStop();
     }
 }

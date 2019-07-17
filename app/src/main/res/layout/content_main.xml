@@ -106,6 +106,7 @@
         android:layout_marginBottom="8dp"
         android:text="0"
         android:textSize="30sp"
+        android:gravity="center"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintEnd_toStartOf="@+id/button2"
         app:layout_constraintStart_toEndOf="@+id/button"
